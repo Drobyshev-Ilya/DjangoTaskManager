@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<head>  
+    <meta charset="UTF-8">  
+    <title>Панель мониторинга времени</title> 
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> 
+
+	<style>
+
+		html *{
+			font-family: Verdana !important;
+		}	
+
+		header {
+			background: #343a40;
+		}
+
+		header::after {
+			content: '';
+			display: table;
+			clear: both;
+		}
+
+		.logo {
+			float: left;
+			padding-top: 15px;
+			margin-left: 10px;
+			padding-bottom: 10px;
+			border: none;
+		}
+
+		nav {
+			float: right;
+		}
+
+		nav ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		nav li {
+		  color: #ffffff;
+		  display: inline-block;
+		  margin-left: 20px;
+		  margin-right: 20px;
+		  padding-top: 20px;
+		  position: relative;
+		}
+
+		nav a {
+		  color: #ffffff;
+		}
+
+		nav a:hover {
+			color: #00ff00;
+		}
+
+		nav a::before {
+			content: '';
+			display: block;
+			height: 5px;
+			background-color: #444;
+
+			position: absolute;
+			top: 0;
+			width: 0%;
+
+			transition: all ease-in-out 250ms;
+		}
+
+		nav a:hover::before {
+			width: 100%;
+		}
+
+		h3 {
+			color: #f8f9fa;
+		}
+
+	</style>
+</head>  
+<body>
+	{% load managertags %}
+	<header>
+		<div class="container_h">
+			<h3 class="logo"><b>Панель мониторинга времени</b></h3>
+
+			<nav>
+				<ul>
+					<li><a href="/show_tasks">Список задач</a></li>
+					<li><a href="/show_timestamps">Журнал активности</a></li>
+					<li><a href="/show_task_dashboard">Панель управления задачами</a></li>
+					<li><a href="/show_time_dashboard">Панель мониторинга времени</a></li>
+				</ul>
+			</nav>
+
+
+		</div>
+	</header>
+	<br>
+	<form method="POST" action="/show_time_dashboard">
+		{% csrf_token %}
+		<label for="date_filter">Фильтровать по неделям и месяцам:</label>
+			{{ date_form.day }}
+		<button type="submit">Фильтр</button>
+	</form>
+	<h4 class="logo"><b>Показаны результаты за {{ week_start }}</b></h4>
+	<br>
+	<table class="table">  
+    	<thead class="thead-dark">  
+    	<tr>  
+        	<th>Название задачи</th>  
+        	<th>Описание задачи</th> 
+			<th>Проект</th>
+			<th>Статус</th>
+			<th>Всего</th> 
+        	<th>На этой неделе</th>  
+        	<th>В этом месяце</th>  
+    	</tr>  
+    	</thead>  
+    	<tbody>  
+		{% for task in tasks %}  
+    		<tr>  
+        		<td>{{ task.task_name }}</td>  
+        		<td>{{ task.task_description }}</td>  
+	        	<td>{{ task.project }}</td> 
+				<td>{{ task.status }}</td>
+				<!-- Пользовательская функция для доступа к многоуровневому словарю, см. /tasks/templatetags/managertags.py для определения -->
+				<td>{% dict_get ts_total task.id %} Минут</td>
+        		<td>{% dict_get ts_week task.id %} Минут</td>  
+        		<td>{% dict_get ts_month task.id %} Минут</td> 
+    		</tr>
+		{% endfor %}  
+   	 </tbody>  
+	</table>  
+	<br>  
+	<br>  
+	<h4 class="logo"><b>Итого:</b></h4>
+	<br>
+	<table class="table">  
+    	<thead class="thead-dark">  
+    	<tr>  
+        	<th>Проект</th>  
+			<th>Всего</th> 
+        	<th>На этой неделе</th>  
+        	<th>В этом месяце</th>  
+    	</tr>  
+    	</thead>  
+    	<tbody>  
+		{% for project in projects %}  
+    		<tr>  
+        		<td>{{ project }}</td>  
+				<td>{% dict_get p_total project %} Минут</td>
+        		<td>{% dict_get p_week project %} Минут</td>  
+        		<td>{% dict_get p_month project %} Минут</td> 
+    		</tr>
+		{% endfor %}  
+   	 </tbody>  
+	</table>  
+</body>  
+</html>  
+
+

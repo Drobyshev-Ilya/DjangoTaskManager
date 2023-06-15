@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<head>  
+    <meta charset="UTF-8">  
+    <title>Журнал активности</title>	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> 
+
+	<style>
+
+		html *{
+    		font-family: Verdana !important;
+		}	
+
+		header {
+          background: #343a40;
+        }
+
+        header::after {
+          content: '';
+          display: table;
+          clear: both;
+        }
+
+        .logo {
+          float: left;
+          padding-top: 15px;
+		  margin-left: 10px;
+		  padding-bottom: 10px;
+          border: none;
+        }
+
+        nav {
+          float: right;
+        }
+
+        nav ul {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+
+        nav li {
+		  color: #ffffff;
+          display: inline-block;
+          margin-left: 20px;
+		  margin-right: 20px;
+		  padding-top: 20px;
+          position: relative;
+        }
+
+        nav a {
+          color: #ffffff;
+        }
+
+        nav a:hover {
+          color: #00ff00;
+        }
+
+        nav a::before {
+          content: '';
+          display: block;
+          height: 5px;
+          background-color: #444;
+
+          position: absolute;
+          top: 0;
+          width: 0%;
+
+          transition: all ease-in-out 250ms;
+        }
+
+        nav a:hover::before {
+          width: 100%;
+        }
+
+		h3 {
+			color: #f8f9fa;
+		}
+
+	</style>
+
+	
+</head>  
+
+
+<body>
+<header>
+	<div class="container_h">
+		<h3 class="logo"><b>Журнал активности</b></h3>
+
+		<nav>
+			<ul>
+        <li><a href="/show_tasks">Список задач</a></li>
+        <li><a href="/show_timestamps">Журнал активности</a></li>
+        <li><a href="/show_task_dashboard">Панель управления задачами</a></li>
+        <li><a href="/show_time_dashboard">Панель мониторинга времени</a></li>
+			</ul>
+		</nav>
+
+
+	</div>
+</header>
+<br>
+<form method="POST" action="/show_timestamps" style="padding-left: 10px;">
+	{% csrf_token %}
+	<button type="submit" >Показать все</button>
+</form>
+<br>
+<form method="POST" action="/timestamp_search" style="padding-left: 10px;">
+	{% csrf_token %}
+	<label>Название задачи:</label>
+		<input type="text" name="task_name" id ="id_task_name" required maxlength="100" placeholder="Поиск задачи...">
+		<button type="submit">Поиск</button>
+</form>
+<br>
+<table class="table">  
+    <thead class="thead-dark">  
+    <tr>   
+        <th>Название задачи</th> 
+		<th>Время начала</th>
+        <th>Время завершения</th> 
+		<th>Затраченное время</th>
+		<th>Действия</th>
+    </tr>  
+    </thead>  
+    <tbody>  
+{% for ts in timestamps %}  
+    <tr>   
+        <td>{{ ts.task.task_name }}</td>  
+        <td>{{ ts.begin_time }}</td>  
+		<td>{{ ts.end_time }}</td>  
+		<td>{{ ts.elapsed_time }} Минут</td>
+        <td>  
+            <a href="/edit_timestamp/{{ ts.id }}">Редактировать</a>
+			<b> | </b>  
+            <a href="/delete_timestamp/{{ ts.id }}">Удалить</a>
+        </td> 
+    </tr>
+{% endfor %}  
+    </tbody>  
+</table>  
+</body>  
+</html>  
